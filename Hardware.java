@@ -33,7 +33,8 @@ public class Hardware {
         return myInstance;
     }
     public void init(HardwareMap hwMap) {
-        /* Return motor */
+        
+        //right front
         try {
             rf =  hwMap.get(DcMotor.class, "rf");
             rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -43,6 +44,8 @@ public class Hardware {
         catch(Exception p_exception) {
             rf = null;
         }
+        
+        //right back
         try {
             rb = hwMap.get(DcMotor.class, "rb");
             rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -53,6 +56,8 @@ public class Hardware {
         catch(Exception p_exception){
             rb = null;
         }
+        
+        //left front
         try {
             lf = hwMap.get(DcMotor.class, "lf");
             lf.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -63,6 +68,8 @@ public class Hardware {
         catch(Exception p_exception) {
             lf = null;
         }
+        
+        //left back
         try {
             lb = hwMap.get(DcMotor.class, "lb");
             lb.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -73,6 +80,8 @@ public class Hardware {
         catch(Exception p_exception) {
             lb = null;
         }
+        
+        //gyro
         try {
             gyro = hwMap.get(BNO055IMU.class, "imu");
             BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -86,93 +95,6 @@ public class Hardware {
         catch(Exception p_exception) {
             gyro = null;
         }
-
-        //motor - wobble
-        try {
-            wGg = hwMap.get(DcMotor.class, "wGg");
-            wGg.setDirection(DcMotorSimple.Direction.REVERSE);
-            wGg.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            wGg.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            wGg.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            wGg.setPower(0);
-        } catch(Exception p_exception) {
-            wGg = null;
-        }
-
-
-        //servo - wobble
-        /**try {
-            wGa = hwMap.get(Servo.class, "wGa");
-        } catch(Exception p_exception) {
-            wGa = null;
-        }**/
-
-        //servo - carousel
-        try {
-            sCarsl = hwMap.get(Servo.class, "servo carousel");
-        }
-        catch(Exception p_exception) {
-            sCarsl = null;
-        }
-
-        /**
-         //motor - intake 2020
-        try {
-            iM = hwMap.get(DcMotor.class, "iM");
-            iM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            iM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            iM.setPower(0);
-        }
-        catch(Exception p_exception) {
-            iM = null;
-        }**/
-
-        //motor - intake twirl mechanism
-        try {
-
-            intake = hwMap.get(DcMotor.class, "iM");
-            intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            intake.setPower(0);
-        }
-        catch(Exception p_exception) {
-            intake = null;
-        }
-    }
-
-    public void motorWobble (double gGw) {
-        if (wGg != null) {
-            wGg.setPower(Range.clip(gGw, -maxSpeed, maxSpeed));
-        }
-    }
-
-    //NEVER SET POSITION >= 1 OR =< 0!!
-    /**public void servoWobble (double aGw){
-        if (wGa != null) {
-            wGa.setPosition(aGw);
-        }
-    }**/
-
-    //implement servo for carousel
-    public void servoCarsl (double carsl){
-        if(sCarsl != null) {
-            sCarsl.setPosition(carsl);
-        }
-    }
-
-    /**
-    public void powerSet(double Mi){
-        if (iM != null) {
-            iM.setPower(Range.clip(Mi, -maxSpeed, maxSpeed));
-        }
-    }**/
-
-    //setting power for intake motor
-    public void powerSet(double in){
-        if (intake != null) {
-            intake.setPower(Range.clip(in, -maxSpeed, maxSpeed));
-        }
-    }
 
 
     public void setPower(double fr, double br, double fl, double bl){
