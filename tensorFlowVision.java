@@ -11,9 +11,10 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.List;
- package org.firstinspires.ftc.robotcontroller.external.samples;
-
-public class tensorFlowVision {
+ //package org.firstinspires.ftc.robotcontroller.external.samples;
+ @Autonomous(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
+ @Disabled
+public class tensorFlowVision extends LinearOpMode {
 Hardware robot = Hardware.getInstance();
     /**
      * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to
@@ -25,9 +26,8 @@ Hardware robot = Hardware.getInstance();
      * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
      * is explained below.
      */
-    @Autonomous(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-    @Disabled
-    public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
+
+
         /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
          * the following 4 detectable objects
          *  0: Ball,
@@ -100,7 +100,7 @@ Hardware robot = Hardware.getInstance();
                 // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
                 // should be set to the value of the images used to create the TensorFlow Object Detection model
                 // (typically 16/9).
-                tfod.setZoom(2.5, 16.0/9.0);
+                tfod.setZoom(2.5, 16.0 / 9.0);
             }
 
             /** Wait for the game to begin */
@@ -111,6 +111,8 @@ Hardware robot = Hardware.getInstance();
             if (opModeIsActive()) {
                 while (opModeIsActive()) {
                     if (tfod != null) {
+                        boolean duckNotFound;
+                        duckNotFound = true;
                         // getUpdatedRecognitions() will return null if no new information is available since
                         // the last time that call was made.
                         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -120,23 +122,27 @@ Hardware robot = Hardware.getInstance();
                             int i = 0;
                             for (Recognition recognition : updatedRecognitions) {
                                 double duckPosition;
-                                double duckTimeStart= runtime.milliseconds();
-                                double duckIncTime=0
-                                while (duckNotFound && duckTimeout){
+                                double duckTimeStart = runtime.milliseconds();
+                                double duckIncTime = 0;
+                                boolean duckTimeout;
+                                duckTimeout = true;// UNSURE AaRUSHI LOOK
+
+                                while (duckNotFound && duckTimeout) {
                                     duckIncTime = runtime.milliseconds();
-                                    if ((duckIncTime- duckTimeStart)>1000){
-                                        duckTimeout = false;}
+                                    if ((duckIncTime - duckTimeStart) > 1000) {
+                                        duckTimeout = false;
+                                    }
                                 }
-                            }
-                            if (recognition.getLabel()=="duck") {
-                                duckPosition = recognition.getLeft();// gets position of duck in pixels
-                                duckNotFound = false;// booolean flag to break out of loop
-                            }
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
+
+                                if (recognition.getLabel() == "duck") {
+                                    duckPosition = recognition.getLeft();// gets position of duck in pixels
+                                    duckNotFound = false;// booolean flag to break out of loop
+                                }
+                                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                        recognition.getLeft(), recognition.getTop());
+                                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                        recognition.getRight(), recognition.getBottom());
                                 i++;
 
                             }
@@ -146,6 +152,7 @@ Hardware robot = Hardware.getInstance();
                 }
             }
         }
+
 
         /**
          * Initialize the Vuforia localization engine.
@@ -179,4 +186,4 @@ Hardware robot = Hardware.getInstance();
             tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
         }
     }
-}
+
