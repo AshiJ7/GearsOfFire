@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.GearsOfFire;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -33,18 +33,17 @@ public class Hardware {
         return myInstance;
     }
     public void init(HardwareMap hwMap) {
-        
+
         //right front
         try {
-            rf =  hwMap.get(DcMotor.class, "rf");
+            rf = hwMap.get(DcMotor.class, "rf");
             rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rf.setPower(0);
-        }
-        catch(Exception p_exception) {
+        } catch (Exception p_exception) {
             rf = null;
         }
-        
+
         //right back
         try {
             rb = hwMap.get(DcMotor.class, "rb");
@@ -52,11 +51,10 @@ public class Hardware {
             // run using encoders or run with encoders
             rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rb.setPower(0);
-        }
-        catch(Exception p_exception){
+        } catch (Exception p_exception) {
             rb = null;
         }
-        
+
         //left front
         try {
             lf = hwMap.get(DcMotor.class, "lf");
@@ -64,11 +62,10 @@ public class Hardware {
             lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             lf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             lf.setPower(0);
-        }
-        catch(Exception p_exception) {
+        } catch (Exception p_exception) {
             lf = null;
         }
-        
+
         //left back
         try {
             lb = hwMap.get(DcMotor.class, "lb");
@@ -76,11 +73,10 @@ public class Hardware {
             lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             lb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             lb.setPower(0);
-        }
-        catch(Exception p_exception) {
+        } catch (Exception p_exception) {
             lb = null;
         }
-        
+
         //gyro
         try {
             gyro = hwMap.get(BNO055IMU.class, "imu");
@@ -91,11 +87,10 @@ public class Hardware {
             parameters.loggingTag = "IMU";
             parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
             gyro.initialize(parameters);
-        }
-        catch(Exception p_exception) {
+        } catch (Exception p_exception) {
             gyro = null;
         }
-
+    }
 
     public void setPower(double fr, double br, double fl, double bl){
         if (rf != null) {
@@ -111,4 +106,6 @@ public class Hardware {
             lb.setPower(Range.clip(bl, -maxSpeed, maxSpeed));
         }
     }
+
+
 }
