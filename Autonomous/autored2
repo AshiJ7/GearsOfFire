@@ -1,1 +1,43 @@
+package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+@Autonomous(name = "autoclass", group = "auto")
+public class autored2 extends LinearOpMode {
+    Hardware robot = Hardware.getInstance();
+    public AutoGyro move = new AutoGyro();
+
+    public void runOpMode() {
+        robot.init(hardwareMap);
+
+        //move towards alliance shipping hub
+        move.Drive(0.5, 20, 20, robot, telemetry);
+
+        //drop off freight into shipping hub
+
+        //spin around
+        move.Drive(0.5, 0, 90, robot, telemetry);
+
+        //go toward freight
+        move.Drive(0.5, 45, 30, robot, telemetry);
+
+        //pick up freight with intake
+
+
+        //spin around
+        move.Drive(0.5, 0, 180, robot, telemetry);
+
+        //go back to alliance shipping hub
+        move.Drive(0.5, 40, 20, robot, telemetry);
+
+        //spin around
+        move.Drive(0.5, 0, 100, robot, telemetry);
+
+        //park into warehouse
+        move.Drive(0.5, 50, 10, robot, telemetry);
+
+    }
+
+
+}
