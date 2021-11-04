@@ -1,0 +1,41 @@
+package org.firstinspires.ftc.teamcode;
+
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOp", group="Robot")
+
+public class TeleOp extends LinearOpMode {
+    Hardware robot = Hardware.getInstance();
+    private ElapsedTime run = new ElapsedTime();
+
+    public void runOpMode()  {
+        double drive = 0;
+        double turn = 0;
+        double max;
+        double strafe = 0;
+
+        robot.init(hardwareMap);
+
+        waitForStart();
+        while(opModeIsActive())
+        {
+            drive = -gamepad1.left_stick_y;
+            turn = -gamepad1.right_stick_x;
+            strafe = -gamepad1.left_stick_x;
+
+            max = Math.max(Math.abs(drive - strafe - turn), Math.max(Math.abs(drive + strafe - turn),
+                    Math.max(Math.abs(drive + strafe + turn), Math.abs(drive + turn - strafe))));
+            if (max < robot.maxSpeed) {
+                robot.setPower(drive - strafe - turn, drive + strafe - turn,
+                        drive + strafe + turn, drive + turn - strafe);
+            }
+            else {
+                double scaleFactor = max / robot.maxSpeed;
+                robot.setPower((drive - strafe - turn) * scaleFactor, (drive + strafe - turn) * scaleFactor,
+                        (drive + strafe + turn) * scaleFactor, (drive + turn - strafe) * scaleFactor);
+            }
+        }//close while loop for opmode is active
+    }//close opmode
+}//close class
