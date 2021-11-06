@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.GearsOfFire;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -14,8 +14,8 @@ import java.util.List;
 
 //package org.firstinspires.ftc.robotcontroller.external.samples;
 @Autonomous(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-@Disabled
-public class TensorFlowVision extends LinearOpMode {
+
+public class tensorFlowVision extends LinearOpMode {
     Hardware robot = Hardware.getInstance();
     double duckPosition;
     String level;
@@ -44,13 +44,13 @@ public class TensorFlowVision extends LinearOpMode {
      *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
      */
     private ElapsedTime runtime = new ElapsedTime();
-    private static final String TFOD_MODEL_ASSET = "Duck";
+    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_DM.tflite";
     private static final String[] LABELS = {
-            "Ball",
-            "Cube",
             "Duck",
             "Marker"
     };
+
+
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -147,19 +147,19 @@ public class TensorFlowVision extends LinearOpMode {
                                 level = "3";
                             }
                             telemetry.addData("Level Detected: ", level);
+                            while(runtime.milliseconds()< 1000) {
+                                double duckTimeStart = runtime.milliseconds();
+                                double duckIncTime = 0;
+                                boolean duckTimeout;
+                                duckTimeout = true;// UNSURE AaRUSHI LOOK
 
-                            double duckTimeStart = runtime.milliseconds();
-                            double duckIncTime = 0;
-                            boolean duckTimeout;
-                            duckTimeout = true;// UNSURE AaRUSHI LOOK
-
-                            while (duckNotFound && duckTimeout) {
-                                duckIncTime = runtime.milliseconds();
-                                if ((duckIncTime - duckTimeStart) > 1000) {
-                                    duckTimeout = false;
+                                while (duckNotFound && duckTimeout) {
+                                    duckIncTime = runtime.milliseconds();
+                                    if ((duckIncTime - duckTimeStart) > 1000) {
+                                        duckTimeout = false;
+                                    }
                                 }
                             }
-
                             if (recognition.getLabel() == "duck") {
                                 // duckPosition = recognition.getLeft();// gets position of duck in pixels
                                 duckNotFound = false;// booolean flag to break out of loop
@@ -190,7 +190,7 @@ public class TensorFlowVision extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "duck identifier");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -212,3 +212,5 @@ public class TensorFlowVision extends LinearOpMode {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
 }
+
+
