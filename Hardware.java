@@ -98,7 +98,7 @@ public class Hardware {
         }
 
         /**
-        //motor for something
+        //motor 
         try {
             wGg = hwMap.get(DcMotor.class, "wGg");
             wGg.setDirection(DcMotorSimple.Direction.REVERSE);
