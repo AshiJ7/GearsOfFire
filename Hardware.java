@@ -15,10 +15,7 @@ public class Hardware {
     public DcMotor rb;
     public DcMotor lf;
     public DcMotor lb;
-    public DcMotor wGg;
-    //public DcMotor iM;
     public DcMotor intake;
-    //public Servo wGa;
     public Servo sCarsl;
 
     //public ModernRoboticsI2cGyro gyro;
@@ -27,24 +24,24 @@ public class Hardware {
     public double maxSpeed = 0.8;
 
     public static Hardware getInstance() {
-        if(myInstance == null) {
+        if (myInstance == null) {
             myInstance = new Hardware();
         }
         return myInstance;
     }
+
     public void init(HardwareMap hwMap) {
-        
+
         //right front
         try {
-            rf =  hwMap.get(DcMotor.class, "rf");
+            rf = hwMap.get(DcMotor.class, "rf");
             rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rf.setPower(0);
-        }
-        catch(Exception p_exception) {
+        } catch (Exception p_exception) {
             rf = null;
         }
-        
+
         //right back
         try {
             rb = hwMap.get(DcMotor.class, "rb");
@@ -52,11 +49,10 @@ public class Hardware {
             // run using encoders or run with encoders
             rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rb.setPower(0);
-        }
-        catch(Exception p_exception){
+        } catch (Exception p_exception) {
             rb = null;
         }
-        
+
         //left front
         try {
             lf = hwMap.get(DcMotor.class, "lf");
@@ -64,11 +60,10 @@ public class Hardware {
             lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             lf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             lf.setPower(0);
-        }
-        catch(Exception p_exception) {
+        } catch (Exception p_exception) {
             lf = null;
         }
-        
+
         //left back
         try {
             lb = hwMap.get(DcMotor.class, "lb");
@@ -76,11 +71,10 @@ public class Hardware {
             lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             lb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             lb.setPower(0);
-        }
-        catch(Exception p_exception) {
+        } catch (Exception p_exception) {
             lb = null;
         }
-        
+
         //gyro
         try {
             gyro = hwMap.get(BNO055IMU.class, "imu");
@@ -91,24 +85,68 @@ public class Hardware {
             parameters.loggingTag = "IMU";
             parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
             gyro.initialize(parameters);
-        }
-        catch(Exception p_exception) {
+        } catch (Exception p_exception) {
             gyro = null;
         }
 
+        //servo for carousel
+        try {
+            sCarsl = hwMap.get(Servo.class, "servo carousel");
+        }
+        catch (Exception p_exception) {
+            sCarsl = null;
+        }
 
-    public void setPower(double fr, double br, double fl, double bl){
-        if (rf != null) {
-            rf.setPower(Range.clip(fr, -maxSpeed, maxSpeed));
+        /**
+        //motor for something
+        try {
+            wGg = hwMap.get(DcMotor.class, "wGg");
+            wGg.setDirection(DcMotorSimple.Direction.REVERSE);
+            wGg.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            wGg.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            wGg.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            wGg.setPower(0);
+        } catch(Exception p_exception) {
+            wGg = null;
+        }*/
+
+        //motor for intake
+        try {
+            intake = hwMap.get(DcMotor.class, "intake motor");
+            intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            intake.setPower(0);
         }
-        if (rb != null) {
-            rb.setPower(Range.clip(br, -maxSpeed, maxSpeed));
+        catch(Exception p_exception) {
+            intake = null;
         }
-        if (lf != null) {
-            lf.setPower(Range.clip(fl, -maxSpeed, maxSpeed));
+
+    }
+
+        public void setPower ( double fr, double br, double fl, double bl){
+            if (rf != null) {
+                rf.setPower(Range.clip(fr, -maxSpeed, maxSpeed));
+            }
+            if (rb != null) {
+                rb.setPower(Range.clip(br, -maxSpeed, maxSpeed));
+            }
+            if (lf != null) {
+                lf.setPower(Range.clip(fl, -maxSpeed, maxSpeed));
+            }
+            if (lb != null) {
+                lb.setPower(Range.clip(bl, -maxSpeed, maxSpeed));
+            }
         }
-        if (lb != null) {
-            lb.setPower(Range.clip(bl, -maxSpeed, maxSpeed));
+
+        public void setServoPosition(double servoPos) {
+        if (sCarsl != null) {
+            sCarsl.setPosition(servoPos);
+        }
+    }
+
+        public void intakeSetPower(double power) {
+        if (intake != null) {
+            intake.setPower(Range.clip(power, -maxSpeed, maxSpeed));
         }
     }
 }
