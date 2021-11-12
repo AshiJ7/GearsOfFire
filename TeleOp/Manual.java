@@ -31,22 +31,28 @@ public class Manual extends LinearOpMode {
             turn = -gamepad1.right_stick_x;
             strafe = -gamepad1.left_stick_x;
 
-            //move carousel servo with right bumper
-            if ((gamepad1.right_bumper)) {
-                robot.setsCarslPosition(0.8);
+            //move carousel servo with a and b - a for blue, b for red
+            if ((gamepad1.a)) {
+                robot.setsCarslPosition(0.9);
             }
-                else {
+
+                else if((gamepad1.b)) {
+                    robot.setsCarslPosition(-0.6);
+                }
+                else{
                     robot.setsCarslPosition(0.5);
                 }
 
-                //set power to intake motor with b
-            if (gamepad1.b) {
+
+                //set power to intake motor with right bumper
+            if (gamepad1.right_bumper) {
                 robot.intakeSetPower(0.7);
             }
             else {
                 robot.intakeSetPower(0);
             }
 
+            /**
             //move intake servo to grab freight
             if ((gamepad1.dpad_up) && !pressingdup) {
                 if (servostatus) {
@@ -60,9 +66,10 @@ public class Manual extends LinearOpMode {
             } else if (!(gamepad1.dpad_up)) {
                 //action
                 pressingdup = false;
-            }
+            }*/
 
-            //move intake servo to hold freight
+            /**
+             * //move intake servo to hold freight
             if ((gamepad1.dpad_down) && !pressingddown) {
                 if (servostatus) {
                     robot.setsIntPosition(-0.6);
@@ -120,9 +127,9 @@ public class Manual extends LinearOpMode {
             } else if (!(gamepad1.left_trigger > 0.1)) {
                 //action
                 pressinglt = false;
-            }
+            }*/
 
-            /**
+
             //decrease forward speed slowly with right trigger
             if ((gamepad1.right_trigger > 0.1) && !pressingrt) {
                 if (moveForward) {
@@ -170,7 +177,7 @@ public class Manual extends LinearOpMode {
             } else if (!(gamepad1.left_trigger > 0.1)) {
                 //action
                 pressinglt = false;
-            }*/
+            }
 
             //movement
             max = Math.max(Math.abs(drive - strafe - turn), Math.max(Math.abs(drive + strafe - turn),
