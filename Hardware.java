@@ -17,6 +17,7 @@ public class Hardware {
     public DcMotor lb;
     public DcMotor intake;
     public Servo sCarsl;
+    public Servo sInt;
 
     //public ModernRoboticsI2cGyro gyro;
     private static Hardware myInstance = null;
@@ -97,19 +98,6 @@ public class Hardware {
             sCarsl = null;
         }
 
-        /**
-        //motor 
-        try {
-            wGg = hwMap.get(DcMotor.class, "wGg");
-            wGg.setDirection(DcMotorSimple.Direction.REVERSE);
-            wGg.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            wGg.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            wGg.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            wGg.setPower(0);
-        } catch(Exception p_exception) {
-            wGg = null;
-        }*/
-
         //motor for intake
         try {
             intake = hwMap.get(DcMotor.class, "intake motor");
@@ -121,6 +109,14 @@ public class Hardware {
             intake = null;
         }
 
+        //servo for intake
+        try {
+            sInt = hwMap.get(Servo.class, "servo intake");
+            sInt.setDirection(Servo.Direction.REVERSE);
+        }
+        catch(Exception p_exception) {
+            sInt = null;
+        }
     }
 
         public void setPower ( double fr, double br, double fl, double bl){
@@ -138,7 +134,7 @@ public class Hardware {
             }
         }
 
-        public void setServoPosition(double servoPos) {
+        public void setsCarslPosition(double servoPos) {
         if (sCarsl != null) {
             sCarsl.setPosition(servoPos);
         }
@@ -147,6 +143,12 @@ public class Hardware {
         public void intakeSetPower(double power) {
         if (intake != null) {
             intake.setPower(Range.clip(power, -maxSpeed, maxSpeed));
+        }
+    }
+
+        public void setsIntPosition(double pos) {
+        if(sInt != null) {
+            sInt.setPosition(pos);
         }
     }
 }
