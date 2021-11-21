@@ -1,0 +1,52 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@Autonomous
+public class Time extends LinearOpMode {
+
+    Hardware robot   = new Hardware();   // Use a Pushbot's hardware
+    private ElapsedTime runtime = new ElapsedTime();   // it creates runtime object
+
+
+    static final double     FORWARD_SPEED = 0.6;      // setting the forward speed
+    static final double     TURN_SPEED    = 0.5;      // setting the turn speed
+    static final double     BACKWARDS_SPEED = 0.35;    // setting the backwards speed
+
+    @Override
+    public void runOpMode() throws InterruptedException {     // creates the method
+        robot.init(hardwareMap);                        // lets the code use the robots hardware
+
+        while (opModeIsActive() && (runtime.seconds() < 3.0)) {    // it will mover forward for 3 seconds
+
+            // it tells the wheels the speed to move forward
+            robot.lf.setPower(FORWARD_SPEED);
+            robot.rf.setPower(FORWARD_SPEED);
+            robot.lb.setPower(FORWARD_SPEED);
+            robot.rb.setPower(FORWARD_SPEED);
+        }
+
+        runtime.reset();          // sets the run time to zero
+
+        while (opModeIsActive() && (runtime.seconds() < 5.0)) {     // it will turn for 5 seconds
+
+            // it will make the robots wheels turn right
+            robot.lf.setPower(TURN_SPEED);
+            robot.rf.setPower(-TURN_SPEED);
+            robot.lb.setPower(TURN_SPEED);
+            robot.rb.setPower(-TURN_SPEED);
+
+        }
+
+       runtime.reset();
+
+        while (opModeIsActive() && (runtime.seconds() < 5.0)) {
+
+            robot.lf.setPower(BACKWARDS_SPEED);
+            robot.rf.setPower(BACKWARDS_SPEED);
+            robot.lb.setPower(BACKWARDS_SPEED);
+            robot.rb.setPower(BACKWARDS_SPEED);
+        }
+    }}
