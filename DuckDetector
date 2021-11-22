@@ -1,0 +1,44 @@
+package org.firstinspires.ftc.teamcode;
+
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.openftc.easyopencv.OpenCvPipeline;
+
+public class DuckDetector extends OpenCvPipeline {
+private Mat workingMatrix = new Mat();
+public String level;
+public double oneTotal = 0;
+//public double twoTotal = 0;
+public double threeTotal = 0;
+
+
+public final Mat processFrame(Mat input) {
+        input.copyTo(workingMatrix);
+
+        if (workingMatrix.empty()) {
+        return input;
+        }
+
+        //Imgproc.cvtColor(workingMatrix, workingMatrix, Imgproc.COLOR_RGB2YCrCb);
+
+        //values to be changed
+        Mat leftmat = workingMatrix.submat(160, 200, 110, 200);
+        Mat rightmat = workingMatrix.submat(125, 200, 110, 200);
+
+        oneTotal = Core.sumElems(leftmat).val[2];
+        oneTotal /= leftmat.cols() * leftmat.rows();
+        //twoTotal = Core.sumElems(bottommat).val[0];
+        threeTotal = Core.sumElems(rightmat).val[2];
+        threeTotal /= rightmat.cols() * rightmat.rows();
+
+        if (threeTotal < 400) {
+        level = "1";
+        }
+        else if (oneTotal < 800) {
+        level = "2";
+        } else {
+        level = "3";
+        }
+        return leftmat;
+        }
+}
