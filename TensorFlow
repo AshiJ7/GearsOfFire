@@ -1,0 +1,99 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import java.util.List;
+
+@Autonomous(name = "TFlowTesting", group = "Vision")
+
+public class TensorFlow extends LinearOpMode {
+
+    private VuforiaLocalizer myVuforia = null;
+    private TFObjectDetector myTfod = null;
+    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_DM.tflite";
+    private static final String DUCKLABEL = "Duck";
+
+    private static final String LICENSE_KEY = " AeB2SIT/////AAABmWZYUwGyh0+9huUEJxqPa6J+xFOcI7j+9c31P3Ur75VxNWhs4NnmuICHs+t5X/Z9CjXPa6" + "jDkQefZuVLo02//QR0v/rkM+d1PxvpLpSfV4PcBm+unWA298h9CC+xjqhG8I0PMPaRzvTTkyYBjRUmdC+VF" + "kAPvDm9f3wBLyOeY6MQg+HihlX6jfJ7YkjBnHD/DoUCWEveAI5V3pyubI9yzYHV8iWPykuIoWhXjnFQ8iwm" + "1AuTMrwDIrUVPYzUhJ+unm4LqE5xQpfqiodt/Y7qDTm+QPz51bPPGzFke77T6EsAcz+Lb5YbBggQwRlOpsg" + "wM4OV/va74FGRIEgPcT+0xgURJ7u91SmD74rESpiGQiQw";
+
+    public void runOpMode() {
+        //Initialize
+        initVuforia();
+        initTfod();
+
+        //Wait for auto to start
+        waitForStart();
+
+        //compute the duck's offsets until auto time expires
+        while(opModeIsActive()) {
+
+            /**Object Detection*/
+            List<Recognition> updatedRecognitions = myTfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                telemetry.addData("# Object Detected: ", updatedRecognitions.size());
+
+                for (Recognition recognition : updatedRecognitions) {
+                    telemetry.addData(">", recognition.getLabel());
+                    if(recognition.getLabel().equals("Duck"))
+                    {
+                        int duckLeftX = (int) recognition.getLeft();
+                        int duckRightX = (int) recognition.getRight();
+                        telemetry.addData("Left Position: ", duckLeftX);
+                        telemetry.addData("Right Position: ", duckRightX);
+                    }
+                    telemetry.addData("Status: ", "The End");
+                }
+
+                sleep(5000);
+            }
+            else
+            {
+                telemetry.addData("Status: ", "Nothing recognized :(");
+            }
+          telemetry.update();
+        }
+    }
+
+
+    private void initVuforia() {
+        //initialize vuforia
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        parameters.vuforiaLicenseKey = LICENSE_KEY;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+
+        //Create vuforia viewing engine specified by parameters
+        myVuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        //exit program if engine wasn't created
+        if (myVuforia == null) {
+            telemetry.addData("ERROR", "Initialization failed :(");
+            sleep(2000);
+            System.exit(1);
+        }
+    }
+
+    private void initTfod() {
+        //initialize tensorflow object detection
+
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+
+        myTfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, myVuforia);
+
+        myTfod.loadModelFromAsset(TFOD_MODEL_ASSET, DUCKLABEL);
+
+        if (myTfod != null) {
+            myTfod.activate();
+        }
+
+        else {
+            telemetry.addData("ERROR", "TFOD failed to activate :(");
+        }
+    }
+}
