@@ -1,0 +1,71 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+
+@Autonomous(name = "Skystone Autonomous")
+public class AutoOpenCV extends LinearOpMode {
+
+
+    Hardware robot = new Hardware();
+    private OpenCvCamera webCam;
+    private ElapsedTime run = new ElapsedTime();
+    private DuckDetector detector;
+    private String hublevel;
+
+    @Override
+    public void runOpMode() {
+        robot.init(hardwareMap);
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        detector = new DuckDetector();
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "duck identifier"), cameraMonitorViewId);
+        webCam.openCameraDevice();
+        FtcDashboard.getInstance().startCameraStream(webCam, 0);
+        webCam.setPipeline(detector);
+        webCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+
+        hublevel = detector.level;
+
+        while(!isStarted() && !isStopRequested()) {
+            hublevel = detector.level;
+            telemetry.addData("level", hublevel);
+            telemetry.addData("oneTotal", detector.oneTotal);
+            telemetry.addData("threeTotal", detector.threeTotal);
+            telemetry.update();
+        }
+
+
+        while(!opModeIsActive()) {}
+
+        //wobblearm is servo
+        //armwobble is motor
+
+        //code while robot is running
+        if(hublevel.equals("1"))
+        {
+            telemetry.addData("Level: ", hublevel);
+
+
+        }
+        if(hublevel.equals("2"))
+        {
+
+            telemetry.addData("Level: ", hublevel);
+        }
+
+        if(hublevel.equals("3"))
+        {
+            telemetry.addData("Level: ", hublevel);
+            }
+
+        telemetry.update();
+    }
+}
