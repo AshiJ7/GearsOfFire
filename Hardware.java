@@ -6,6 +6,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -18,12 +19,9 @@ public class Hardware {
     public DcMotor lf;
     public DcMotor lb;
     public DcMotor intake;
-    public Servo leftduckwheel;
-    public Servo rightduckwheel;
-    public Servo sInt;
-    public DcMotor lift;
-    public DcMotor extension;
-    public DcMotor transfer;
+    public DcMotor duckwheel;
+    public DcMotor arm;
+    public Servo sClaw;
 
     //public ModernRoboticsI2cGyro gyro;
     private static Hardware myInstance = null;
@@ -96,20 +94,15 @@ public class Hardware {
             gyro = null;
         }
 
-        //servo for carousel
+        //motor for carousel
         try {
-            leftduckwheel = hwMap.get(Servo.class, "left motor carousel");
+            duckwheel = hwMap.get(DcMotor.class, "carousel motor");
+            duckwheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            duckwheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            duckwheel.setPower(0);
         }
         catch(Exception p_exception) {
-            leftduckwheel = null;
-        }
-
-        //servo for carousel
-        try {
-            rightduckwheel = hwMap.get(Servo.class, "right motor carousel");
-        }
-        catch(Exception p_exception) {
-            rightduckwheel = null;
+            duckwheel = null;
         }
 
         //motor for intake
@@ -123,47 +116,26 @@ public class Hardware {
             intake = null;
         }
 
-        //servo for intake
+        //servo for claw
         try {
-         sInt = hwMap.get(Servo.class, "servo intake");
-         sInt.setDirection(Servo.Direction.REVERSE);
-         }
-         catch(Exception p_exception) {
-         sInt = null;
-         }
+            sClaw = hwMap.get(Servo.class, "claw servo");
+            sClaw.setDirection(Servo.Direction.REVERSE);
+        }
+        catch (Exception p_exception) {
+            sClaw = null;
+        }
 
-        //motor for lift
+        //motor for arm
         try {
-            lift = hwMap.get(DcMotor.class, "lift motor");
-            lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            lift.setPower(0);
+            arm = hwMap.get(DcMotor.class, "arm motor");
+            arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            arm.setPower(0);
         }
         catch(Exception p_exception) {
-            lift = null;
+            arm = null;
         }
 
-        //motor for extension
-        try {
-            extension = hwMap.get(DcMotor.class, "extension motor");
-            extension.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            extension.setPower(0);
-        }
-        catch (Exception p_exception) {
-            extension = null;
-        }
-
-        //motor for transferring from intake to lift
-        try {
-            transfer = hwMap.get(DcMotor.class, "transfer motor");
-            transfer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            transfer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            transfer.setPower(0);
-        }
-        catch (Exception p_exception) {
-            transfer = null;
-        }
     }
 
     public void setPower ( double fr, double br, double fl, double bl){
@@ -181,15 +153,9 @@ public class Hardware {
         }
     }
 
-    public void leftduckPos(double dpos) {
-        if (leftduckwheel != null) {
-            leftduckwheel.setPosition(dpos);
-        }
-    }
-
-    public void rightduckPos(double dpos) {
-        if (rightduckwheel != null) {
-            rightduckwheel.setPosition(dpos);
+    public void duckPower(double dpow) {
+        if (duckwheel != null) {
+            duckwheel.setPower(dpow);
         }
     }
 
@@ -199,26 +165,15 @@ public class Hardware {
         }
     }
 
-    public void liftSetLevel(double level) {
-        if (lift != null) {
-            lift.setPower(Range.clip(level, -maxSpeed, maxSpeed));
+    public void armSetPower(double apow) {
+        if (arm != null) {
+            arm.setPower(apow);
         }
     }
 
-    public void extensionPower(double epower) {
-        if (extension != null) {
-            extension.setPower(Range.clip(epower, -maxSpeed, maxSpeed));
-        }
-    }
-
-    public void transferPower(double tpower) {
-        if (transfer != null) {
-            transfer.setPower(Range.clip(tpower, -maxSpeed, maxSpeed));
-        }
-    }
-     public void setsIntPosition(double pos) {
-        if (sInt != null) {
-            sInt.setPosition(pos);
+     public void setsClawPosition(double pos) {
+        if (sClaw != null) {
+            sClaw.setPosition(pos);
         }
      }
 }
