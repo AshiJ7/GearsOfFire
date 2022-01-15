@@ -4,6 +4,7 @@ import android.service.autofill.DateValueSanitizer;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -22,6 +23,11 @@ public class Hardware {
     public DcMotor duckwheel;
     public DcMotor arm;
     public Servo sClaw;
+    public Servo sRetract;
+    String errorMsg;
+    DigitalChannel digitalTouch;  // Hardware Device Object
+
+
 
     //public ModernRoboticsI2cGyro gyro;
     private static Hardware myInstance = null;
@@ -125,16 +131,39 @@ public class Hardware {
             sClaw = null;
         }
 
+        //servo for wheel retractor
+        try {
+            sRetract = hwMap.get(Servo.class, "wheel retractor");
+            //sRetract.setDirection(Servo.Direction.REVERSE);
+        }
+        catch(Exception p_exception) {
+            sRetract = null;
+        }
+
         //motor for arm
         try {
             arm = hwMap.get(DcMotor.class, "arm motor");
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //arm.setDirection(DcMotorSimple.Direction.REVERSE);
             arm.setPower(0);
         }
         catch(Exception p_exception) {
             arm = null;
         }
+
+        try {
+            digitalTouch = hwMap.get(DigitalChannel.class, "touch sensor");
+            digitalTouch.setMode(DigitalChannel.Mode.INPUT);
+        }
+        catch(Exception p_exception) {
+            digitalTouch = null;
+            errorMsg = "touch sensor failed";
+
+        }
+
+
+        //y.addData("Error Message: ", errorMsg);
 
     }
 
@@ -171,9 +200,15 @@ public class Hardware {
         }
     }
 
-     public void setsClawPosition(double pos) {
+    public void setsClawPosition(double pos) {
         if (sClaw != null) {
             sClaw.setPosition(pos);
         }
-     }
+    }
+
+    public void setsRetract(double pos) {
+        if(sRetract != null) {
+            sRetract.setPosition(pos);
+        }
+    }
 }
