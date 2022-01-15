@@ -1,0 +1,108 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@TeleOp(name = "Test: Touch Sensor with Motor Original", group = "Test")
+public class TestTouchSensorWithMotor extends LinearOpMode {
+
+    DigitalChannel digitalTouchSensor;
+    private DcMotor liftMotor = null;
+    double liftPower;
+    boolean touchSensorPressed = false;
+    private ElapsedTime runtime = new ElapsedTime();
+    int upperLevel = 400;
+    int midLevel = 300;
+    int lowerLevel = 200;
+    boolean movingByEncoder = false;
+
+    @Override
+    public void runOpMode() {
+
+        liftMotor  = hardwareMap.get(DcMotor.class, "arm motor");
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        digitalTouchSensor = hardwareMap.get(DigitalChannel.class, "touch sensor");
+        digitalTouchSensor.setMode(DigitalChannel.Mode.INPUT);
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+
+            // Digital Input and Telemetry
+            if (digitalTouchSensor.getState() != true) {
+                telemetry.addData("Digital Touch: ", "Pressed");
+                touchSensorPressed = true;              // this value to remain until the lift starts up
+                liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+            else {
+                telemetry.addData("Digital Touch: ", "Not Pressed    ");
+            }
+
+            // lift motor control so that it only goes up after touch sensor is pressed
+            if(!movingByEncoder) {
+                if (!touchSensorPressed ) {    // touch sensor not pressed so allow lift to work in both directions
+                    liftPower = -gamepad2.right_stick_y;
+                }
+                else if (touchSensorPressed && -gamepad2.right_stick_y < 0) {  // joystick set to go up only after pressing touch sensor
+                    liftPower = -gamepad2.right_stick_y;
+                    touchSensorPressed = false;
+                }
+                else {                      // touch sensor has been pressed so stop motor until the motor is given an up value
+                    liftPower = 0;
+                }
+
+                if(gamepad2.dpad_up){
+                    liftByEncoder(-0.1, upperLevel);
+                }
+                else if(gamepad2.dpad_left){
+                    liftByEncoder(-0.1, midLevel);
+                }
+                else if(gamepad2.dpad_down){
+                    liftByEncoder(-0.1, lowerLevel);
+                }
+
+                // now set the lift motor to the power determined above
+                liftMotor.setPower(liftPower);
+            }
+
+            telemetry.addData("MotorPower: ",liftPower);
+            telemetry.addData("EncoderValue: ",liftMotor.getCurrentPosition());
+            telemetry.addData("TargetPosition: ", liftMotor.getTargetPosition());
+            telemetry.update();
+        }
+    }
+
+
+    public void liftByEncoder(double speed, int newTarget){
+        if (opModeIsActive()) {
+            movingByEncoder = true;
+            
+            //Determine new target position, and pass to motor controller
+            liftMotor.setTargetPosition(newTarget);
+
+            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            liftMotor.setPower(speed);
+
+            while (liftMotor.isBusy() && (Math.abs(gamepad2.right_stick_y) == 0) && digitalTouchSensor.getState() == true)  {
+                // Display it for the driver.
+                telemetry.addData("TargetPosition ", newTarget);
+                telemetry.addData("CurrentPosition ", liftMotor.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop lift motion;
+            liftMotor.setPower(0);
+
+            liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            movingByEncoder = false;
+        }
+    }
+}
