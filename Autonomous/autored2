@@ -2,42 +2,253 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "autoclass", group = "auto")
+@Autonomous(name = "autored2", group = "auto")
 public class autored2 extends LinearOpMode {
+
     Hardware robot = Hardware.getInstance();
-    public AutoGyro move = new AutoGyro();
+    public AutoGyro movegyro = new AutoGyro();
+    public AutoEncoder moveencoder = new AutoEncoder();
+    private ElapsedTime runtime = new ElapsedTime();
+    boolean movingByEncoder = false;
 
     public void runOpMode() {
         robot.init(hardwareMap);
 
-        //move towards alliance shipping hub
-        move.Drive(0.5, 20, 20, robot, telemetry);
+        waitForStart();
 
-        //drop off freight into shipping hub
+        //driveForward(10, 0.5);
+        robot.setsClawPosition(0.27);
+        robot.intakeSetPower(0.15);
+        moveencoder.Drive(0.4, 9, 9, 9, 9);
+        //turn(25);
+        //liftByEncoder(0.25, -770);
+        robot.arm.setTargetPosition(-760);
+        robot.armSetPower(0.2);
+        sleep(3500);
+        robot.setsClawPosition(0.44);
+        sleep(2000);
+        robot.setsClawPosition(0.27);
+        robot.intakeSetPower(0);
+        sleep(1000);
+        //liftByEncoder(0.5, 20);
+        robot.arm.setTargetPosition(10);
+        robot.armSetPower(0.3);
+        sleep(3000);
+        turn(270);
+        driveForward(57, 0.5);
+        //turn(-90);  //270?
+        //driveForward(10, 0.3);
+        //moveencoder.Drive(0.3, 20, 50, 50, 50);
+        //strafeRight(5, 0.5);
 
-        //spin around
-        move.Drive(0.5, 0, 90, robot, telemetry);
+        /**runtime.reset();
+         while(runtime.seconds() < 2.5)
+         {
+         robot.duckPower(0.6);
+         }
 
-        //go toward freight
-        move.Drive(0.5, 45, 30, robot, telemetry);
+         robot.duckPower(0);
 
-        //pick up freight with intake
-
-
-        //spin around
-        move.Drive(0.5, 0, 180, robot, telemetry);
-
-        //go back to alliance shipping hub
-        move.Drive(0.5, 40, 20, robot, telemetry);
-
-        //spin around
-        move.Drive(0.5, 0, 100, robot, telemetry);
-
-        //park into warehouse
-        move.Drive(0.5, 50, 10, robot, telemetry);
-
+         runtime.reset();*/
     }
 
+    public void liftByEncoder(double speed, int newTarget) {
+        if (opModeIsActive()) {
+            movingByEncoder = true;
+            robot.arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.arm.setTargetPosition(newTarget);
+            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+            runtime.reset();
+            robot.arm.setPower(Math.abs(speed));
+
+            //telemetry for encoder positions
+            while (robot.arm.isBusy() && Math.abs(gamepad2.right_stick_y) == 0 && robot.digitalTouch.getState() == true )  {
+                telemetry.addData("TargetPosition ", newTarget);
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+                telemetry.update();
+            }
+            robot.arm.setPower(0);
+            robot.arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            movingByEncoder = false;
+        }
+    }
+
+    public void driveForward (double distance, double speed){
+        double wheelCircumference = 4 * Math.PI;
+        double wheelMotor = 560;
+        double count = (distance * (wheelMotor / wheelCircumference));
+
+        robot.setPower(0, 0, 0, 0);
+
+        //switched set target position and reset encoders
+
+        robot.rf.setTargetPosition((int) Math.round(count));
+        robot.rb.setTargetPosition((int) Math.round(count));
+        robot.lf.setTargetPosition((int) Math.round(count));
+        robot.lb.setTargetPosition((int) Math.round(count));
+
+        robot.rf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.rf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.setPower(speed, speed, speed, speed);
+
+        while(robot.rf.getCurrentPosition() < robot.rf.getTargetPosition()) {
+            telemetry.addData("Current: ", robot.rf.getCurrentPosition());
+            telemetry.addData("Target: ", robot.rf.getTargetPosition());
+            telemetry.addData("Speed: ", robot.rf.getPower());
+            telemetry.update();
+
+            //robot.setPower(speed, speed, speed, speed);
+        }
+
+        //robot.setPower(0, 0, 0, 0);
+
+        robot.rf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void strafeLeft(double distance, double speed){
+        double wheelCircumference = 4 * Math.PI;
+        double wheelMotor = 560;
+        double ticksPos = (distance * (wheelMotor / wheelCircumference));
+        double ticksNeg = (-distance * (wheelMotor / wheelCircumference));
+
+        robot.setPower(0, 0, 0, 0);
+
+        robot.rf.setTargetPosition((int) Math.round(ticksPos));
+        robot.rb.setTargetPosition((int) Math.round(ticksNeg));
+        robot.lf.setTargetPosition((int) Math.round(ticksNeg));
+        robot.lb.setTargetPosition((int) Math.round(ticksPos));
+
+
+        robot.rf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+
+        robot.rf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.setPower(speed, speed, speed, speed);
+
+        //robot.setPower(0, 0, 0, 0);
+
+        while(robot.rf.getCurrentPosition() < robot.rf.getTargetPosition()) {
+            telemetry.addData("Current: ", robot.rf.getCurrentPosition());
+            telemetry.addData("Target: ", robot.rf.getTargetPosition());
+            telemetry.addData("Speed: ", robot.rf.getPower());
+            telemetry.update();
+
+            //robot.setPower(speed, speed, speed, speed);
+        }
+
+        robot.rf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void strafeRight(double distance, double speed){
+        double wheelCircumference = 4 * Math.PI;
+        double wheelMotor = 560;
+        double ticksPos = (distance * (wheelMotor / wheelCircumference));
+        double ticksNeg = (-distance * (wheelMotor / wheelCircumference));
+
+        robot.setPower(0, 0, 0, 0);
+
+        robot.rf.setTargetPosition((int) Math.round(ticksNeg));
+        robot.rb.setTargetPosition((int) Math.round(ticksPos));
+        robot.lf.setTargetPosition((int) Math.round(ticksPos));
+        robot.lb.setTargetPosition((int) Math.round(ticksNeg));
+
+        robot.rf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.rf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.setPower(speed, speed, speed, speed);
+
+        //robot.setPower(0, 0, 0, 0);
+
+        while(robot.rf.getCurrentPosition() < robot.rf.getTargetPosition()) {
+            telemetry.addData("Current: ", robot.rf.getCurrentPosition());
+            telemetry.addData("Target: ", robot.rf.getTargetPosition());
+            telemetry.addData("Speed: ", robot.rf.getPower());
+            telemetry.update();
+
+            //robot.setPower(speed, speed, speed, speed);
+        }
+
+        robot.rf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void turn (double degree){
+        robot.rf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double currentAngle = robot.gyro.getAngularOrientation().firstAngle;
+        double targetAngle = currentAngle + degree;
+        if (targetAngle > 180) {
+            targetAngle -= 360;
+        }
+        else if (targetAngle < -180) {
+            targetAngle += 360;
+        }
+        if (degree >= 0) {
+            double error = degree;
+            while (Math.abs(error) > 3) {
+                robot.setPower(-0.0028 * error, -0.0028 * error, 0.0028 * error, 0.0028 * error);
+                error = targetAngle - robot.gyro.getAngularOrientation().firstAngle;
+                if (error > 180) {
+                    error -= 360;
+                }
+                else if (error < -180) {
+                    error += 360;
+                }
+                error = Math.abs(error);
+            }
+        }
+        else {
+            double error = degree;
+            while (Math.abs(error) > 3) {
+                robot.setPower(0.0028 * error, 0.0028 * error, -0.0028 * error, -0.0028 * error);
+                error = targetAngle - robot.gyro.getAngularOrientation().firstAngle;
+                if (error > 180) {
+                    error -= 360;
+                }
+                else if (error < -180) {
+                    error += 360;
+                }
+                error = Math.abs(error);
+            }
+        }
+        robot.setPower(0, 0, 0, 0);
+    }
 }
