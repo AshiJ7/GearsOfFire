@@ -55,30 +55,62 @@ public class AutoOpenCV extends LinearOpMode {
 
         //code while robot is running - detect level and place freight
         if (level.equals("ONE")) { //bottom tier
+            moveencoder.Drive(0.4, 3, 3, 3, 3);  //5 for level 3 and 2
             robot.setsClawPosition(0.27);
+
+            wait(1000);
+            moveencoder.Drive(0.4, -28, 28, 28, -28);
+            moveencoder.Drive(0.5, 2, 2, 2, 2);  //8 for level 3
+            sleep(2000);
             robot.intakeSetPower(0.15);
-            moveencoder.Drive(0.5, -13, 13, 13, -13);
-            moveencoder.Drive(0.4, 8, 8, 8, 8);
-            robot.arm.setTargetPosition(-1126);
+            robot.arm.setTargetPosition(-1100);  //-800 for level 3, -950 for level 2
             robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.armSetPower(0.2);
-            while (robot.arm.isBusy() && Math.abs(gamepad2.right_stick_y) == 0 && robot.digitalTouch.getState() == true) {
-                telemetry.addData("TargetPosition ", -1126);
+            wait(5000);
+            moveencoder.Drive(0.4, 6, 6, 6, 6); //not there for level 3, 2 for level 2
+            robot.setsClawPosition(0.27);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
                 telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
-                telemetry.update();
+                //telemetry.update();
             }
+            sleep(1000);
+            robot.setsClawPosition(0.5);
             sleep(2000);
+            moveencoder.Drive(0.4, -4, -4, -4, -4);
+
+            robot.setsClawPosition(0.27);
+            sleep(1000);
+            robot.intakeSetPower(0);
+            robot.arm.setTargetPosition(7);
+            //robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.armSetPower(0.2);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", 7);
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            telemetry.update();
+            turn(270);
+            driveForward(40, 0.3);
+            robot.setsRetract(0.7);
         }
 
         if (level.equals("TWO")) { //middle tier
+
+            moveencoder.Drive(0.4, 3, 3, 3, 3);  //5 for level 3 and 2
             robot.setsClawPosition(0.27);
+
+            wait(1000);
+            moveencoder.Drive(0.4, -28, 28, 28, -28);
+            moveencoder.Drive(0.5, 2, 2, 2, 2);  //8 for level 3
+            sleep(2000);
             robot.intakeSetPower(0.15);
-            driveForward(0.2, 4);
-            moveencoder.Drive(0.5, -18, 18, 18, -18);
-            moveencoder.Drive(0.4, 10, 10, 10, 10);
-            robot.arm.setTargetPosition(-760);
+            robot.arm.setTargetPosition(-950);  //-800 for level 3, -950 for level 2
             robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.armSetPower(0.2);
+            wait(4000);
+            moveencoder.Drive(0.4, 2, 2, 2, 2); //not there for level 3, 2 for level 2
+            robot.setsClawPosition(0.27);
             while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
                 telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
                 telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
@@ -86,7 +118,9 @@ public class AutoOpenCV extends LinearOpMode {
             }
             sleep(1000);
             robot.setsClawPosition(0.5);
-            sleep(1000);
+            sleep(2000);
+            moveencoder.Drive(0.4, -4, -4, -4, -4);
+
             robot.setsClawPosition(0.27);
             sleep(1000);
             robot.intakeSetPower(0);
@@ -98,23 +132,26 @@ public class AutoOpenCV extends LinearOpMode {
                 telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
             }
             telemetry.update();
-            turn(90);
-            driveForward(20, 0.3);
+            turn(270);
+            driveForward(40, 0.3);
+            robot.setsRetract(0.7);
         }
 
         if (level.equals("THREE")) {  //top tier
+
+            moveencoder.Drive(0.4, 5, 5, 5, 5);  //5 for level 3 and 2
             robot.setsClawPosition(0.27);
-            //sleep(1000);
-            //moveencoder.Drive(0.4, 5,5,5,5);
-            //driveForward(0.6, 8);
-            //moveencoder.Drive(0.4, 18, -18, -18, 18);
-            strafeLeft(0.4, 18);
-            wait(3000);
-            moveencoder.Drive(0.4, 12, 12, 12, 12);
+
+            wait(1000);
+            moveencoder.Drive(0.4, -28, 28, 28, -28);
+            moveencoder.Drive(0.5, 8, 8, 8, 8);  //8 for level 3
+            sleep(2000);
             robot.intakeSetPower(0.15);
-            robot.arm.setTargetPosition(-760);
+            robot.arm.setTargetPosition(-825);  //-800 for level 3, -950 for level 2
             robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.armSetPower(0.2);
+            wait(5000);
+            robot.setsClawPosition(0.27);
             while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
                 telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
                 telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
@@ -122,7 +159,9 @@ public class AutoOpenCV extends LinearOpMode {
             }
             sleep(1000);
             robot.setsClawPosition(0.5);
-            sleep(1000);
+            sleep(2000);
+            moveencoder.Drive(0.4, -4, -4, -4, -4);
+
             robot.setsClawPosition(0.27);
             sleep(1000);
             robot.intakeSetPower(0);
@@ -134,11 +173,12 @@ public class AutoOpenCV extends LinearOpMode {
                 telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
             }
             telemetry.update();
-            turn(90);
-            driveForward(20, 0.3);
-            robot.setsRetract(0.43);
+            turn(270);
+            driveForward(50, 0.3);
+            robot.setsRetract(0.7);
         }
     }
+
     private void wait(int ms) {
         try {
             Thread.sleep(ms);
@@ -261,11 +301,16 @@ public class AutoOpenCV extends LinearOpMode {
             //robot.setPower(0, 0, 0, 0);
 
             while (robot.rf.getCurrentPosition() < robot.rf.getTargetPosition()) {
-                telemetry.addData("Current: ", robot.rf.getCurrentPosition());
-                telemetry.addData("Target: ", robot.rf.getTargetPosition());
+                telemetry.addData("RF Current: ", robot.rf.getCurrentPosition());
+                telemetry.addData("RF Target: ", robot.rf.getTargetPosition());
+                telemetry.addData("RB Current: ", robot.rb.getCurrentPosition());
+                telemetry.addData("RB Target: ", robot.rb.getTargetPosition());
+                telemetry.addData("LF Current: ", robot.lf.getCurrentPosition());
+                telemetry.addData("LF Target: ", robot.lf.getTargetPosition());
+                telemetry.addData("LB Current: ", robot.lb.getCurrentPosition());
+                telemetry.addData("LB Target: ", robot.lb.getTargetPosition());
                 telemetry.addData("Speed: ", robot.rf.getPower());
                 telemetry.update();
-
                 //robot.setPower(speed, speed, speed, speed);
             }
 
