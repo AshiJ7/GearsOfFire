@@ -1,12 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.service.autofill.DateValueSanitizer;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Hardware {
 
@@ -15,15 +22,23 @@ public class Hardware {
     public DcMotor rb;
     public DcMotor lf;
     public DcMotor lb;
-    public DcMotor intake;
-    public DcMotor cap;
     public DcMotor duckwheel;
-    public Servo sInt;
+    public DcMotor arm;
+    public Servo sRetract;
+    public Servo wheel1;
+    public Servo wheel2;
+    String errorMsg;
+    DigitalChannel digitalTouch;  // Hardware Device Object
+    DistanceSensor sensorDistance;
+    ColorSensor sensorcolor;
+
 
     //public ModernRoboticsI2cGyro gyro;
     private static Hardware myInstance = null;
 
     public double maxSpeed = 1;
+
+    private Hardware () {}
 
     public static Hardware getInstance() {
         if (myInstance == null) {
@@ -93,7 +108,7 @@ public class Hardware {
 
         //motor for carousel
         try {
-            duckwheel = hwMap.get(DcMotor.class, "motor carousel");
+            duckwheel = hwMap.get(DcMotor.class, "carousel motor");
             duckwheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             duckwheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             duckwheel.setPower(0);
@@ -102,36 +117,69 @@ public class Hardware {
             duckwheel = null;
         }
 
-        //motor for intake
+        //servo for wheel retractor
         try {
-            intake = hwMap.get(DcMotor.class, "intake motor");
-            intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            intake.setPower(0);
+            sRetract = hwMap.get(Servo.class, "wheel retractor");
+            //sRetract.setDirection(Servo.Direction.REVERSE);
         }
         catch(Exception p_exception) {
-            intake = null;
+            sRetract = null;
+            errorMsg = "wheel retractor servo failed";
         }
 
-        //motor for capstone
+        //servo for wheel 1
         try {
-            cap = hwMap.get(DcMotor.class, "cap motor");
-            cap.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            cap.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            cap.setPower(0);
+            wheel1 = hwMap.get(Servo.class, "wheel1");
+            //sRetract.setDirection(Servo.Direction.REVERSE);
         }
         catch(Exception p_exception) {
-            cap = null;
+            wheel1 = null;
         }
 
-        //servo for intake
+        //servo for wheel 2
         try {
-         sInt = hwMap.get(Servo.class, "servo intake");
-         sInt.setDirection(Servo.Direction.REVERSE);
-         }
-         catch(Exception p_exception) {
-         sInt = null;
-         }
+            wheel2 = hwMap.get(Servo.class, "wheel2");
+            //sRetract.setDirection(Servo.Direction.REVERSE);
+        }
+        catch(Exception p_exception) {
+            wheel2 = null;
+        }
+
+        //motor for arm
+        try {
+            arm = hwMap.get(DcMotor.class, "arm motor");
+            arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            arm.setTargetPosition(0);
+            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //arm.setDirection(DcMotorSimple.Direction.REVERSE);
+            arm.setPower(0);
+        }
+        catch(Exception p_exception) {
+            arm = null;
+            errorMsg = "arm motor failed";
+        }
+
+        //touch sensor
+        try {
+            digitalTouch = hwMap.get(DigitalChannel.class, "touch sensor");
+            digitalTouch.setMode(DigitalChannel.Mode.INPUT);
+        }
+        catch(Exception p_exception) {
+            digitalTouch = null;
+            errorMsg = "touch sensor failed";
+        }
+
+        //color sensor
+        try {
+            sensorcolor = hwMap.get(ColorSensor.class, "color sensor");
+            sensorDistance = hwMap.get(DistanceSensor.class, "color sensor");
+        }
+        catch(Exception p_exception) {
+            sensorcolor = null;
+        }
+        //y.addData("Error Message: ", errorMsg);
+
     }
 
     public void setPower ( double fr, double br, double fl, double bl){
@@ -149,29 +197,33 @@ public class Hardware {
         }
     }
 
-    public void duckSetPower(double dpower) {
+    public void duckPower(double dpow) {
         if (duckwheel != null) {
-            duckwheel.setPower(Range.clip(dpower, -maxSpeed, maxSpeed));
+            duckwheel.setPower(dpow);
         }
     }
 
-    public void intakeSetPower(double power) {
-        if (intake != null) {
-            intake.setPower(Range.clip(power, -maxSpeed, maxSpeed));
+    public void armSetPower(double apow) {
+        if (arm != null) {
+            arm.setPower(apow);
         }
     }
 
-    public void capSetPower(double pow) {
-        if(cap != null) {
-            cap.setPower(Range.clip(pow, -maxSpeed, maxSpeed));
+    public void setwheel1Pos(double pos) {
+        if (wheel1 != null) {
+            wheel1.setPosition(pos);
         }
     }
 
+    public void setwheel2Pos(double pos) {
+        if (wheel1 != null) {
+            wheel1.setPosition(pos);
+        }
+    }
 
-     public void setsIntPosition(double pos) {
-     if(sInt != null) {
-     sInt.setPosition(pos);
-     }
-     }
-
+    public void setsRetract(double pos) {
+        if(sRetract != null) {
+            sRetract.setPosition(pos);
+        }
+    }
 }
