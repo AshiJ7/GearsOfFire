@@ -34,7 +34,7 @@ public class Blue1Duck extends LinearOpMode {
 
         int lowtarget = -380;
         int midtarget = -720;
-        int hightarget = -1200;
+        int hightarget = -1300;
 
         robot.init(hardwareMap);
 
@@ -112,9 +112,13 @@ public class Blue1Duck extends LinearOpMode {
             robot.duckPower(0.3);
             wait(2000);
             robot.duckPower(0);
-            moveencoder.Drive(0.5, -12, -12, -12, -12);
+            moveencoder.Drive(0.5, -10, -10, -10, -10);
             strafeLeft(13, 0.4);
 
+            if(robot.arm.getCurrentPosition() != 15) {
+                robot.arm.setTargetPosition(15);
+                robot.armSetPower(0.3);
+            }
             telemetry.update();
         }
 
@@ -164,9 +168,13 @@ public class Blue1Duck extends LinearOpMode {
             robot.duckPower(0.3);
             wait(2000);
             robot.duckPower(0);
-            moveencoder.Drive(0.5, -12, -12, -12, -12);
+            moveencoder.Drive(0.5, -10, -10, -10, -10);
             strafeLeft(13, 0.4);
 
+            if(robot.arm.getCurrentPosition() != 15) {
+                robot.arm.setTargetPosition(15);
+                robot.armSetPower(0.3);
+            }
             telemetry.update();
         }
 
@@ -174,7 +182,7 @@ public class Blue1Duck extends LinearOpMode {
 
             moveencoder.Drive(0.9, 7, 7, 7, 7);
             wait(700);
-            turn(210);
+            turn(217);
             moveencoder.Drive(0.7, -7, -7, -7, -7);
             sleep(1000);
             robot.arm.setTargetPosition(hightarget);
@@ -190,7 +198,7 @@ public class Blue1Duck extends LinearOpMode {
                 telemetry.update();
             }
             sleep(500);
-            moveencoder.Drive(0.4, -4, -4, -4, -4);
+            moveencoder.Drive(0.4, -5.5, -5.5, -5.5, -5.5);
             robot.wheel1.setPosition(0.1);
             robot.wheel2.setPosition(0.9);
             wait(1000);
@@ -210,15 +218,19 @@ public class Blue1Duck extends LinearOpMode {
             driveForward(20, 0.6);
             turn(300);
             //driveForward(22, 0.45);
-            driveForward(10.8, 0.4);
+            driveForward(12, 0.4);
             robot.setPower(0, 0, 0, 0);
             robot.setsRetract(0.43);
             robot.duckPower(0.3);
             wait(2000);
             robot.duckPower(0);
-            moveencoder.Drive(0.5, -12, -12, -12, -12);
+            moveencoder.Drive(0.5, -10, -10, -10, -10);
             strafeLeft(13, 0.4);
 
+            if(robot.arm.getCurrentPosition() != 15) {
+                robot.arm.setTargetPosition(15);
+                robot.armSetPower(0.3);
+            }
             telemetry.update();
         }
     }
