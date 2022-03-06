@@ -40,8 +40,8 @@ public class TheTeleOP extends LinearOpMode {
         boolean clawopencaptimer = false;
         double clawopencaptimetarget = 0;
         double armpow = .95;
-        double capposup;
-        double capposdown;
+        double capposup = -0.4;
+        double capposdown = 0.75;
 
         int armtargetup;
         int armtargetdown;
@@ -167,18 +167,6 @@ public class TheTeleOP extends LinearOpMode {
 
             run.reset();
 
-            /**if (gamepad2.left_bumper) {
-             robot.setsRetract(0.43);
-             robot.duckPower(-.51);
-             }
-             else if (gamepad2.right_bumper) {
-             robot.setsRetract(0.43);
-             robot.duckPower(.51);
-             }
-             else {
-             robot.duckPower(0);
-             }*/
-
             if(gamepad2.x) {
                 robot.setsRetract(0);
             }
@@ -186,43 +174,45 @@ public class TheTeleOP extends LinearOpMode {
                 robot.setsRetract(0.43);
             }
 
-            if(gamepad2.right_trigger > 0.1) {
-                robot.duckPower(-gamepad2.right_trigger/2);
+            if(gamepad2.right_trigger > 0.1 && gamepad2.right_trigger < 0.5) {
+                robot.duckPower(0.26);
             }
-            else if(gamepad2.left_trigger > 0.1) {
-                robot.duckPower(gamepad2.left_trigger/2);
+            else if(gamepad2.right_trigger > 0.4) {
+                robot.duckPower(gamepad2.right_trigger/2);
+            }
+            else if(gamepad2.left_trigger > 0.1 && gamepad2.left_trigger < 0.5) {
+                robot.duckPower(-0.26);
+            }
+            else if(gamepad2.left_trigger > 0.4) {
+                robot.duckPower(-gamepad2.left_trigger/2);
             }
             else {
                 robot.duckPower(0);
             }
 
-           if(gamepad2.dpad_left) {
+            if(gamepad2.dpad_right) {
                 robot.setcappos(0.75);
             }
-            else if(gamepad2.dpad_right) {
+            else if(gamepad2.dpad_left) {
                 robot.setcappos(-0.4);
             }
-
-
-            /**if(gamepad2.right_trigger > 0.1) {
-                robot.duckPower(0.5);
+            else if(gamepad2.a) {
+                robot.setcappos(robot.capp.getPosition() + 0.02);
             }
-            else if(gamepad2.left_trigger > 0.1) {
-                robot.duckPower(-0.5);
+            else if(gamepad2.b) {
+                robot.setcappos(robot.capp.getPosition() - 0.02);
             }
-            else {
-                robot.duckPower(0);
-            }*/
+
 
             /**if (gamepad2.right_trigger > 0.2 && !rtpressed){
-                //robot.setsClawPosition(clawclose);
-                clawclosetimer = true;
-                clawclosetimetarget = System.currentTimeMillis()+0.00;
-                rtpressed = true;
-            }
-            if (!(gamepad2.right_trigger > 0.2)){
-                rtpressed = false;
-            } // making sure it is just pressed once*/
+             //robot.setsClawPosition(clawclose);
+             clawclosetimer = true;
+             clawclosetimetarget = System.currentTimeMillis()+0.00;
+             rtpressed = true;
+             }
+             if (!(gamepad2.right_trigger > 0.2)){
+             rtpressed = false;
+             } // making sure it is just pressed once*/
 
             if (gamepad2.right_stick_y > 0.1 && !ltpressed) {
                 //robot.setsClawPosition(clawopen);
@@ -246,26 +236,26 @@ public class TheTeleOP extends LinearOpMode {
                 ltpressed = false;
             }
 
-            if (gamepad2.b && !bpressed) {
-                //robot.setsClawPosition(clawclose);
-                clawcaptimer = true;
-                clawcaptimetarget = System.currentTimeMillis() + 300;
-                bpressed = true;
-            }
+            /**if (gamepad2.b && !bpressed) {
+             //robot.setsClawPosition(clawclose);
+             clawcaptimer = true;
+             clawcaptimetarget = System.currentTimeMillis() + 300;
+             bpressed = true;
+             }
 
-            if (!gamepad2.b) {
-                bpressed = false;
-            }
+             if (!gamepad2.b) {
+             bpressed = false;
+             }
 
-            if (gamepad2.a && !apressed) {
-                //robot.setsClawPosition(clawclose);
-                clawclosecaptimer = true;
-                clawclosecaptimertarget = System.currentTimeMillis() + 300;
-                apressed = true;
-            }  //0.38 open 0.28 close
-            if (!gamepad2.a) {
-                apressed = false;
-            }
+             if (gamepad2.a && !apressed) {
+             //robot.setsClawPosition(clawclose);
+             clawclosecaptimer = true;
+             clawclosecaptimertarget = System.currentTimeMillis() + 300;
+             apressed = true;
+             }  //0.38 open 0.28 close
+             if (!gamepad2.a) {
+             apressed = false;
+             }*/
             if (clawopencaptimer && System.currentTimeMillis() >= clawopencaptimetarget) {
                 //robot.setsClawPosition(clawopen);
                 clawopencaptimer = false;
@@ -300,7 +290,7 @@ public class TheTeleOP extends LinearOpMode {
             }
 
             if(gamepad2.dpad_up) {
-                armtargetup = robot.arm.getCurrentPosition() - 45;
+                armtargetup = robot.arm.getCurrentPosition() - 65;
                 robot.arm.setTargetPosition(armtargetup);
                 robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.armSetPower(1);
@@ -308,7 +298,7 @@ public class TheTeleOP extends LinearOpMode {
             }
 
             if(gamepad2.dpad_down) {
-                armtargetdown = robot.arm.getCurrentPosition() + 45;
+                armtargetdown = robot.arm.getCurrentPosition() + 65;
                 robot.arm.setTargetPosition(armtargetdown);
                 robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.armSetPower(1);
