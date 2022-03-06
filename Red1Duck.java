@@ -33,8 +33,8 @@ public class Red1Duck extends LinearOpMode {
     public void runOpMode() {
 
         int lowtarget = -380;
-        int midtarget = -720;
-        int hightarget = -1200;
+        int midtarget = -760;
+        int hightarget = -1300;
 
         robot.init(hardwareMap);
 
@@ -69,7 +69,7 @@ public class Red1Duck extends LinearOpMode {
         if (level.equals("ONE")) {
             moveencoder.Drive(0.9, 3, 3, 3, 3);
             wait(700);
-            turn(150);
+            turn(145);
             moveencoder.Drive(0.7, -13, -13, -13, -13);
             sleep(1000);
             robot.arm.setTargetPosition(lowtarget);
@@ -90,7 +90,7 @@ public class Red1Duck extends LinearOpMode {
             wait(1000);
             robot.wheel1.setPosition(0.5);
             robot.wheel2.setPosition(0.5);
-            moveencoder.Drive(0.7, 5, 5, 5, 5);
+            moveencoder.Drive(0.7, 8, 8, 8, 8);
             sleep(500);
             robot.arm.setTargetPosition(0);
             robot.armSetPower(0.4);
@@ -98,25 +98,30 @@ public class Red1Duck extends LinearOpMode {
                 telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
                 telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
             }
-            turn(305);
+            turn(315);
             sleep(500);
             driveForward(20, 0.6);
             turn(60);
-            driveForward(11, 0.4);
+            driveForward(12, 0.4);
             robot.setPower(0, 0, 0, 0);
             robot.setsRetract(0.43);
             robot.duckPower(-0.3);
             wait(2900);
             robot.duckPower(0);
             moveencoder.Drive(0.5, -9, -9, -9, -9);
-            moveencoder.Drive(0.4, -15, 15, 15, -15);
+            moveencoder.Drive(0.4, -14, 14, 14, -14);
+
+            if(robot.arm.getCurrentPosition() != 15) {
+                robot.arm.setTargetPosition(15);
+                robot.armSetPower(0.3);
+            }
             telemetry.update();
         }
 
         if (level.equals("TWO")) {
             moveencoder.Drive(0.9, 3, 3, 3, 3);
             wait(700);
-            turn(150);
+            turn(142);
             moveencoder.Drive(0.7, -13, -13, -13, -13);
             sleep(1000);
             robot.arm.setTargetPosition(midtarget);
@@ -131,13 +136,13 @@ public class Red1Duck extends LinearOpMode {
                 telemetry.update();
             }
             sleep(500);
-            moveencoder.Drive(0.4, -7, -7, -7, -7);
+            moveencoder.Drive(0.4, -6.5, -6.5, -6.5, -6.5);
             robot.wheel1.setPosition(0.1);
             robot.wheel2.setPosition(0.9);
             wait(1000);
             robot.wheel1.setPosition(0.5);
             robot.wheel2.setPosition(0.5);
-            moveencoder.Drive(0.7, 5, 5, 5, 5);
+            moveencoder.Drive(0.7, 7, 7, 7, 7);
             sleep(500);
             robot.arm.setTargetPosition(0);
             robot.armSetPower(0.4);
@@ -148,22 +153,27 @@ public class Red1Duck extends LinearOpMode {
             turn(305);
             sleep(500);
             driveForward(20, 0.6);
-            turn(60);
-            driveForward(11, 0.4);
+            turn(70);
+            driveForward(12, 0.4);
             robot.setPower(0, 0, 0, 0);
             robot.setsRetract(0.43);
             robot.duckPower(-0.3);
             wait(2900);
             robot.duckPower(0);
             moveencoder.Drive(0.5, -9, -9, -9, -9);
-            moveencoder.Drive(0.4, -15, 15, 15, -15);
+            moveencoder.Drive(0.4, -14, 14, 14, -14);
+
+            if(robot.arm.getCurrentPosition() != 15) {
+                robot.arm.setTargetPosition(15);
+                robot.armSetPower(0.3);
+            }
             telemetry.update();
         }
 
         if (level.equals("THREE")) {
             moveencoder.Drive(0.9, 3, 3, 3, 3);
             wait(700);
-            turn(150);
+            turn(143);
             moveencoder.Drive(0.7, -13, -13, -13, -13);
             sleep(1000);
             robot.arm.setTargetPosition(hightarget);
@@ -195,15 +205,20 @@ public class Red1Duck extends LinearOpMode {
             turn(305);
             sleep(500);
             driveForward(20, 0.6);
-            turn(60);
-            driveForward(11, 0.4);
+            turn(68);
+            driveForward(12, 0.4);
             robot.setPower(0, 0, 0, 0);
             robot.setsRetract(0.43);
             robot.duckPower(-0.3);
             wait(2900);
             robot.duckPower(0);
             moveencoder.Drive(0.5, -9, -9, -9, -9);
-            moveencoder.Drive(0.4, -15, 15, 15, -15);
+            moveencoder.Drive(0.4, -14, 14, 14, -14);
+
+            if(robot.arm.getCurrentPosition() != 15) {
+                robot.arm.setTargetPosition(15);
+                robot.armSetPower(0.3);
+            }
             telemetry.update();
         }
     }
