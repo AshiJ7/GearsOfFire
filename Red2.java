@@ -36,7 +36,7 @@ public class Red2 extends LinearOpMode {
 
         int lowtarget = -380;
         int midtarget = -720;
-        int hightarget = -1300;
+        int hightarget = -1310;
 
         robot.init(hardwareMap);
 
@@ -68,15 +68,16 @@ public class Red2 extends LinearOpMode {
         while (!opModeIsActive())
             waitForStart();
 
+        if(level.equals("ONE")) {
             moveencoder.Drive(1, 2.2, 2.2, 2.2, 2.2);
             wait(500);
-            turn(206);
+            turn(215);
             moveencoder.Drive(1, -9, -9, -9, -9);
             sleep(500);
-            robot.arm.setTargetPosition(midtarget);
+            robot.arm.setTargetPosition(lowtarget);
             robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.armSetPower(0.7);
-            if(Math.abs(robot.arm.getTargetPosition() - robot.arm.getCurrentPosition()) < 10) {
+            if (Math.abs(robot.arm.getTargetPosition() - robot.arm.getCurrentPosition()) < 10) {
                 robot.armSetPower(0);
             }
             wait(500);
@@ -85,7 +86,7 @@ public class Red2 extends LinearOpMode {
                 telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
             }
             sleep(100);
-            moveencoder.Drive(0.4,-8, -8, -8, -8);
+            moveencoder.Drive(0.5, -8, -8, -8, -8);
             robot.wheel1.setPosition(0.1);
             robot.wheel2.setPosition(0.9);
             wait(1000);
@@ -93,58 +94,237 @@ public class Red2 extends LinearOpMode {
             robot.wheel2.setPosition(0.5);
             moveencoder.Drive(0.9, 5, 5, 5, 5);
             sleep(500);
-            robot.arm.setTargetPosition(0);
+            robot.arm.setTargetPosition(32);
             robot.armSetPower(0.5);
             while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
                 telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
                 telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
             }
-            turn(228);
-            strafeLeft(19, 0.7);
-            moveencoder.Drive(0.35, -35, -35, -35, -35);
-            while(robot.sensorDistance.getDistance(DistanceUnit.CM) > 5.5) {
+            turn(240);
+            strafeLeft(17, 0.7);
+            moveencoder.Drive(0.35, -39, -39, -39, -39);
+            while (robot.sensorDistance.getDistance(DistanceUnit.CM) > 5.5) {
                 telemetry.addData("Distance(cm): ", robot.sensorDistance.getDistance(DistanceUnit.CM));
                 moveencoder.Drive(0.4, -2, -2, -2, -2);
                 robot.wheel1.setPosition(0.9);
                 robot.wheel2.setPosition(0.1);
             }
-        robot.wheel1.setPosition(0.5);
-        robot.wheel2.setPosition(0.5);
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
+            driveForward(15, 0.6);
+            strafeLeft(16, 0.4);
+            driveForward(22, 0.7);
+            turn(100);
+            moveencoder.Drive(0.7, -6, -6, -6, -6);
+            sleep(500);
+            robot.arm.setTargetPosition(hightarget);
+            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.armSetPower(0.7);
+            if (Math.abs(robot.arm.getTargetPosition() - robot.arm.getCurrentPosition()) < 10) {
+                robot.armSetPower(0);
+            }
+            wait(500);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            sleep(100);
+            moveencoder.Drive(0.4, -9, -9, -9, -9);
+            robot.wheel1.setPosition(0.1);
+            robot.wheel2.setPosition(0.9);
+            wait(1000);
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
+            moveencoder.Drive(0.9, 5, 5, 5, 5);
+            sleep(500);
+            robot.arm.setTargetPosition(32);
+            robot.armSetPower(0.5);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            turn(100);
+            moveencoder.Drive(0.5, -17, 17, 17, -17);
+            driveForward(35, 0.5);
+
+            if(robot.arm.getCurrentPosition() != 15) {
+                robot.arm.setTargetPosition(32);
+                robot.armSetPower(0.3);
+            }
+            telemetry.update();
+        }
+
+        if(level.equals("TWO")) {
+            moveencoder.Drive(1, 2.2, 2.2, 2.2, 2.2);
+            wait(500);
+            turn(215);
+            moveencoder.Drive(1, -9, -9, -9, -9);
+            sleep(500);
+            robot.arm.setTargetPosition(midtarget);
+            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.armSetPower(0.7);
+            if (Math.abs(robot.arm.getTargetPosition() - robot.arm.getCurrentPosition()) < 10) {
+                robot.armSetPower(0);
+            }
+            wait(500);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            sleep(100);
+            moveencoder.Drive(0.4, -8, -8, -8, -8);
+            robot.wheel1.setPosition(0.1);
+            robot.wheel2.setPosition(0.9);
+            wait(1000);
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
+            moveencoder.Drive(0.9, 5, 5, 5, 5);
+            sleep(500);
+            robot.arm.setTargetPosition(32);
+            robot.armSetPower(0.5);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            turn(240);
+            strafeLeft(19, 0.7);
+            moveencoder.Drive(0.35, -39, -39, -39, -39);
+            while (robot.sensorDistance.getDistance(DistanceUnit.CM) > 5.5) {
+                telemetry.addData("Distance(cm): ", robot.sensorDistance.getDistance(DistanceUnit.CM));
+                moveencoder.Drive(0.4, -2, -2, -2, -2);
+                robot.wheel1.setPosition(0.9);
+                robot.wheel2.setPosition(0.1);
+            }
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
             driveForward(15, 0.4);
             strafeLeft(16, 0.4);
-            driveForward(26, 0.5);
+            driveForward(22, 0.5);
             turn(90);
             moveencoder.Drive(0.5, -5, -5, -5, -5);
-        sleep(500);
-        robot.arm.setTargetPosition(hightarget);
-        robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.armSetPower(0.7);
-        if(Math.abs(robot.arm.getTargetPosition() - robot.arm.getCurrentPosition()) < 10) {
-            robot.armSetPower(0);
+            sleep(500);
+            robot.arm.setTargetPosition(hightarget);
+            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.armSetPower(0.7);
+            if (Math.abs(robot.arm.getTargetPosition() - robot.arm.getCurrentPosition()) < 10) {
+                robot.armSetPower(0);
+            }
+            wait(500);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            sleep(100);
+            moveencoder.Drive(0.4, -9, -9, -9, -9);
+            robot.wheel1.setPosition(0.1);
+            robot.wheel2.setPosition(0.9);
+            wait(1000);
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
+            moveencoder.Drive(0.9, 5, 5, 5, 5);
+            sleep(500);
+            robot.arm.setTargetPosition(32);
+            robot.armSetPower(0.5);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            turn(90);
+            moveencoder.Drive(0.5, -17, 17, 17, -17);
+            driveForward(35, 0.5);
+
+            if(robot.arm.getCurrentPosition() != 15) {
+                robot.arm.setTargetPosition(32);
+                robot.armSetPower(0.3);
+            }
+            telemetry.update();
         }
-        wait(500);
-        while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
-            telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
-            telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+
+        if(level.equals("THREE")) {
+            moveencoder.Drive(1, 2.2, 2.2, 2.2, 2.2);
+            wait(500);
+            turn(215);
+            moveencoder.Drive(1, -9, -9, -9, -9);
+            sleep(500);
+            robot.arm.setTargetPosition(hightarget);
+            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.armSetPower(0.7);
+            if (Math.abs(robot.arm.getTargetPosition() - robot.arm.getCurrentPosition()) < 10) {
+                robot.armSetPower(0);
+            }
+            wait(500);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            sleep(100);
+            moveencoder.Drive(0.4, -8, -8, -8, -8);
+            robot.wheel1.setPosition(0.1);
+            robot.wheel2.setPosition(0.9);
+            wait(1000);
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
+            moveencoder.Drive(0.9, 5, 5, 5, 5);
+            sleep(500);
+            robot.arm.setTargetPosition(32);
+            robot.armSetPower(0.5);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            turn(240);
+            strafeLeft(19, 0.7);
+            moveencoder.Drive(0.40, -40, -40, -40, -40);
+            while (robot.sensorDistance.getDistance(DistanceUnit.CM) > 5.5) {
+                telemetry.addData("Distance(cm): ", robot.sensorDistance.getDistance(DistanceUnit.CM));
+                moveencoder.Drive(0.4, -2, -2, -2, -2);
+                robot.wheel1.setPosition(0.9);
+                robot.wheel2.setPosition(0.1);
+            }
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
+            driveForward(15, 0.7);
+            strafeLeft(16, 0.4);
+            driveForward(22, 0.7);
+            turn(90);
+            moveencoder.Drive(0.7, -7, -7, -7, -7);
+            sleep(500);
+            robot.arm.setTargetPosition(hightarget);
+            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.armSetPower(0.7);
+            if (Math.abs(robot.arm.getTargetPosition() - robot.arm.getCurrentPosition()) < 10) {
+                robot.armSetPower(0);
+            }
+            wait(500);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            sleep(100);
+            moveencoder.Drive(0.4, -9, -9, -9, -9);
+            robot.wheel1.setPosition(0.1);
+            robot.wheel2.setPosition(0.9);
+            wait(1000);
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
+            moveencoder.Drive(0.9, 5, 5, 5, 5);
+            sleep(500);
+            robot.arm.setTargetPosition(32);
+            robot.armSetPower(0.5);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            turn(90);
+            moveencoder.Drive(0.5, -17, 17, 17, -17);
+            driveForward(35, 0.5);
+
+            if(robot.arm.getCurrentPosition() != 15) {
+                robot.arm.setTargetPosition(32);
+                robot.armSetPower(0.3);
+            }
+            telemetry.update();
         }
-        sleep(100);
-        moveencoder.Drive(0.4,-8, -8, -8, -8);
-        robot.wheel1.setPosition(0.1);
-        robot.wheel2.setPosition(0.9);
-        wait(1000);
-        robot.wheel1.setPosition(0.5);
-        robot.wheel2.setPosition(0.5);
-        moveencoder.Drive(0.9, 5, 5, 5, 5);
-        sleep(500);
-        robot.arm.setTargetPosition(0);
-        robot.armSetPower(0.5);
-        while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
-            telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
-            telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
-        }
-        turn(95);
-        driveForward(50, 0.8);
-         telemetry.update();
     }
 
     private void wait(int ms) {
