@@ -8,25 +8,35 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name = "camera blue side 2")
-
-//@Config
+@Autonomous(name = "camera blue side 2 with cycle")
 
 public class Blue2 extends LinearOpMode {
+    //red side 1
     Hardware robot = Hardware.getInstance();
 
     private static OpenCvCamera webCam;
     public AutoEncoder moveencoder = new AutoEncoder();
     private DuckDetector detector;
+    public AutoGyro movegyro = new AutoGyro();
     private static String level = "test";
+    private static ElapsedTime run = new ElapsedTime();
+
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
     @Override
     public void runOpMode() {
+
+        int lowtarget = -380;
+        int midtarget = -790;
+        int hightarget = -1300;
 
         robot.init(hardwareMap);
 
@@ -40,11 +50,17 @@ public class Blue2 extends LinearOpMode {
 
         while (!isStarted()) {
             level = detector.level;
+            dashboardTelemetry.addData("Level: ", level);
+            dashboardTelemetry.addData("LeftTotal: ", detector.leftTotal);
+            dashboardTelemetry.addData("CentreTotal: ", detector.centerTotal);
+            dashboardTelemetry.addData("RightTotal: ", detector.rightTotal);
             telemetry.addData("Level: ", level);
             telemetry.addData("LeftTotal: ", detector.leftTotal);
             telemetry.addData("CentreTotal: ", detector.centerTotal);
             telemetry.addData("RightTotal: ", detector.rightTotal);
             telemetry.update();
+            dashboardTelemetry.update();
+
         }
 
         //waitForStart();
@@ -52,144 +68,91 @@ public class Blue2 extends LinearOpMode {
         while (!opModeIsActive())
             waitForStart();
 
-        //code while robot is running - detect level and place freight
-
-        //works
-        if (level.equals("ONE")) { //bottom tier
-            moveencoder.Drive(0.4, 3, 3, 3, 3);  //5 for level 3 and 2
-            robot.setsClawPosition(0.165);
-
-            wait(1000);
-            moveencoder.Drive(0.6, -28, 28, 28, -28);
-            moveencoder.Drive(0.5, 2, 2, 2, 2);  //8 for level 3
-            sleep(1000);
-            robot.intakeSetPower(0.2);
-            robot.arm.setTargetPosition(-1065);  //-800 for level 3, -950 for level 2
+            moveencoder.Drive(0.8, -13, -13, -13, -13);
+            sleep(500);
+            robot.arm.setTargetPosition(hightarget);
             robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.armSetPower(0.2);
-            wait(3000);
-            moveencoder.Drive(0.4, 5.3, 5.3, 5.3, 5.3); //not there for level 3, 2 for level 2
-            robot.setsClawPosition(0.165);
-            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
-                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
-                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
-                //telemetry.update();
+            robot.armSetPower(0.8);
+            if (Math.abs(robot.arm.getTargetPosition() - robot.arm.getCurrentPosition()) < 10) {
+                robot.armSetPower(0);
             }
-            sleep(1000);
-            robot.setsClawPosition(0.3);
-            sleep(1000);
-            moveencoder.Drive(0.5, -5, -5, -5, -5);
-
-            robot.setsClawPosition(0.165);
-            sleep(1000);
-            robot.intakeSetPower(0);
-            robot.arm.setTargetPosition(10);
-            //robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.armSetPower(0.2);
+            wait(500);
             while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
                 telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
                 telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            moveencoder.Drive(0.5, -2, -2, -2, -2);
+            sleep(100);
+            robot.wheel1.setPosition(0.1);
+            robot.wheel2.setPosition(0.9);
+            wait(1000);
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
+            moveencoder.Drive(0.9, 5, 5, 5, 5);
+            sleep(500);
+            robot.arm.setTargetPosition(0);
+            robot.armSetPower(0.5);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            turn(-250); //actually 110
+            robot.arm.setTargetPosition(90);
+            robot.armSetPower(0.5);
+            moveencoder.Drive(0.7, -27, 27, 27, -27);
+            wait(500);
+            moveencoder.Drive(0.45, -45, -45, -45, -45);
+            while (robot.sensorDistance.getDistance(DistanceUnit.CM) > 5.5) {
+                telemetry.addData("Distance(cm): ", robot.sensorDistance.getDistance(DistanceUnit.CM));
+                moveencoder.Drive(0.4, -1.5, -1.5, -1.5, -1.5);
+                robot.wheel1.setPosition(0.9);
+                robot.wheel2.setPosition(0.1);
+            }
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
+            driveForward(15, 0.8);
+            moveencoder.Drive(0.4, -16, 16, 16, -16);
+            driveForward(25, 0.9);
+            robot.arm.setTargetPosition(-100);
+            robot.armSetPower(0.7);
+            turn(270);
+            moveencoder.Drive(0.8, -6, -6, -6, -6);
+            sleep(500);
+            robot.arm.setTargetPosition(hightarget);
+            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.armSetPower(0.7);
+            if (Math.abs(robot.arm.getTargetPosition() - robot.arm.getCurrentPosition()) < 10) {
+                robot.armSetPower(0);
+            }
+            wait(500);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            sleep(100);
+            moveencoder.Drive(0.4, -10, -10, -10, -10);
+            robot.wheel1.setPosition(0.1);
+            robot.wheel2.setPosition(0.9);
+            wait(1000);
+            robot.wheel1.setPosition(0.5);
+            robot.wheel2.setPosition(0.5);
+            moveencoder.Drive(0.9, 7, 7, 7, 7);
+            sleep(500);
+            robot.arm.setTargetPosition(-30);
+            robot.armSetPower(0.5);
+            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
+                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
+                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
+            }
+            turn(270);
+            strafeLeft(16, 0.7);
+            driveForward(40, 0.6);
+            if(robot.arm.getCurrentPosition() != 15) {
+                robot.arm.setTargetPosition(32);
+                robot.armSetPower(0.3);
             }
             telemetry.update();
-            moveencoder.Drive(0.3, -2, -2, -2, -2);
-            turn(90);
-            //moveencoder.Drive(0.2, -7, 7, 7, -7);
-            strafeLeft(5, 0.4);
-            driveForward(50, 0.7);
-            robot.intakeSetPower(0.6);
         }
-
-        //??
-        if (level.equals("TWO")) { //middle tier
-
-            moveencoder.Drive(0.4, 3, 3, 3, 3);  //5 for level 3 and 2
-            robot.setsClawPosition(0.165);
-
-            wait(1000);
-            moveencoder.Drive(0.4, -25, 25, 25, -25);
-            moveencoder.Drive(0.5, 2.3, 2.3, 2.3, 2.3);  //8 for level 3
-            sleep(2000);
-            robot.intakeSetPower(0.15);
-            robot.arm.setTargetPosition(-968);  //-800 for level 3, -950 for level 2
-            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.armSetPower(0.2);
-            wait(4000);
-            moveencoder.Drive(0.4, 4, 4, 4, 4); //not there for level 3, 2 for level 2
-            robot.setsClawPosition(0.165);
-            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
-                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
-                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
-                //telemetry.update();
-            }
-            sleep(1000);
-            robot.setsClawPosition(0.3);
-            sleep(2000);
-            moveencoder.Drive(0.4, -4.3, -4.3, -4.3, -4.3);
-
-            robot.setsClawPosition(0.165);
-            sleep(1000);
-            robot.intakeSetPower(0);
-            robot.arm.setTargetPosition(10);
-            //robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.armSetPower(0.2);
-            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
-                telemetry.addData("TargetPosition ", 10);
-                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
-            }
-            telemetry.update();
-            moveencoder.Drive(0.3, -2.6, -2.6, -2.6, -2.6);
-            turn(90);
-            //moveencoder.Drive(0.2, -7, 7, 7, -7);
-            strafeLeft(4.4, 0.4);
-            driveForward(50, 0.7);
-            robot.intakeSetPower(0.6);
-        }
-
-        //works
-        if (level.equals("THREE")) {  //top tier
-
-            moveencoder.Drive(0.4, 4, 4, 4, 4);  //5 for level 3 and 2
-            robot.setsClawPosition(0.165);
-
-            wait(1000);
-            moveencoder.Drive(0.4, -25, 25, 25, -25);
-            moveencoder.Drive(0.5, 6, 6, 6, 6);  //8 for level 3
-            sleep(2000);
-            robot.intakeSetPower(0.15);
-            robot.arm.setTargetPosition(-833);  //-800 for level 3, -950 for level 2
-            robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.armSetPower(0.2);
-            wait(3000);
-            robot.setsClawPosition(0.165);
-            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
-                telemetry.addData("TargetPosition ", robot.arm.getTargetPosition());
-                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
-                //telemetry.update();
-            }
-            sleep(1000);
-            robot.setsClawPosition(0.3);
-            sleep(2000);
-            moveencoder.Drive(0.4, -5, -5, -5, -5);
-
-            robot.setsClawPosition(0.165);
-            sleep(1000);
-            robot.intakeSetPower(0);
-            robot.arm.setTargetPosition(10);
-            //robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.armSetPower(0.2);
-            while (robot.arm.isBusy() && robot.digitalTouch.getState() == true) {
-                telemetry.addData("TargetPosition ", 10);
-                telemetry.addData("CurrentPosition ", robot.arm.getCurrentPosition());
-            }
-            telemetry.update();
-            moveencoder.Drive(0.3, -3, -3, -3, -3);
-            turn(90);
-            //moveencoder.Drive(0.2, -7, 7, 7, -7);
-            strafeLeft(5, 0.4);
-            driveForward(50, 0.7);
-            robot.intakeSetPower(0.6);
-        }
-    }
 
     private void wait(int ms) {
         try {
@@ -215,7 +178,7 @@ public class Blue2 extends LinearOpMode {
         if (degree >= 0) {
             double error = degree;
             while (Math.abs(error) > 3) {
-                robot.setPower(-0.0028 * error, -0.0028 * error, 0.0028 * error, 0.0028 * error);
+                robot.setPower(-0.004 * error, -0.004 * error, 0.004 * error, 0.004 * error);
                 error = targetAngle - robot.gyro.getAngularOrientation().firstAngle;
                 if (error > 180) {
                     error -= 360;
@@ -227,7 +190,7 @@ public class Blue2 extends LinearOpMode {
         } else {
             double error = degree;
             while (Math.abs(error) > 3) {
-                robot.setPower(0.0028 * error, 0.0028 * error, -0.0028 * error, -0.0028 * error);
+                robot.setPower(0.0035 * error, 0.0035 * error, -0.0035 * error, -0.0035 * error);
                 error = targetAngle - robot.gyro.getAngularOrientation().firstAngle;
                 if (error > 180) {
                     error -= 360;
